@@ -1,0 +1,52 @@
+function resStruct = modifiedSmoother3(Z, D1, D2, A, Z_tilde, Finv, U, a_t_t, P_t_t)
+
+
+% check dimensions
+assert(isequal(size(D1), size(D2)))
+assert(size(A,1) == size(A,2))
+
+[nObs, dimObs] = size(Z);
+dimState = size(A,1);
+
+D_tilde = (D1*A +D2);
+
+
+resStruct = struct();
+resStruct.a_t_T = nan(nObs, dimState);
+resStruct.P_t_T = nan(dimState, dimState, nObs);
+
+resStruct.a_t_T(nObs, :)     = a_t_t(nObs,:);
+resStruct.P_t_T(:, :, nObs)  = P_t_t(:,:, nObs);
+
+for iObs = nObs-1:-1:1
+    a_filtered = a_t_t(iObs,:)';
+    P_filtered = P_t_t(:,:, iObs);
+    
+    a_filtered_tp1    = a_t_t(iObs+1,:)';
+    P_filtered_tp1    = P_t_t(:,:, iObs+1);
+    Finv_tp1          = Finv(:,:, iObs+1);
+    U_tp1             = U(:,:, iObs+1);
+    Z_tilde_tp1       = Z_tilde(iObs+1,:)';
+    
+    % one-step ahead smoother
+    xx = P_filtered * D_tilde';
+    a_t_tp1 = a_filtered + xx * Finv_tp1 * Z_tilde_tp1;
+    U_t_tp1 = P_filtered - xx * Finv_tp1 * xx';
+    
+    % components for J
+    P_filtered_tp1_Inv = eye(size(P_filtered_tp1)) / P_filtered_tp1;
+    
+    xx = A * P_filtered - U_tp1 *  Finv_tp1 * D_tilde * P_filtered;
+    P_t_tp1_given_tp1 = xx';
+    
+    J = P_t_tp1_given_tp1 * P_filtered_tp1_Inv;
+    
+    resStruct.a_t_T(iObs, :) = a_t_tp1 + ...
+        J * (resStruct.a_t_T(iObs + 1, :)' - a_filtered_tp1);
+    resStruct.P_t_T(:,:,iObs) = U_t_tp1 + ...
+        J * (resStruct.P_t_T(:,:,iObs + 1) - P_filtered_tp1) * J';
+    
+    
+end
+
+end
