@@ -35,7 +35,7 @@ for iObs = nObs:-1:1
         L = A - K_t * D_tilde;
     end
     r = D_tilde' * Finv_t * Z_tilde_t + L' * r;
-    N = D_tilde' * Finv_t * D_tilde' + L' * N * L;
+    N = D_tilde' * Finv_t * D_tilde + L' * N * L;
     
 end
 
