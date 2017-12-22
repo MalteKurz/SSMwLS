@@ -14,6 +14,7 @@ resStruct         = struct();
 resStruct.Z_tilde = nan(nObs, dimObs);
 resStruct.a_t_t   = nan(nObs, dimState);
 resStruct.P_t_t   = nan(dimState, dimState, nObs);
+resStruct.P_tp1_t = nan(dimState, dimState, nObs);
 resStruct.Finv    = nan(dimObs, dimObs, nObs);
 resStruct.K       = nan(dimState, dimObs, nObs);
 resStruct.U       = nan(dimState, dimObs, nObs);
@@ -37,12 +38,15 @@ for iObs = 1:nObs
     a_t_t = A * a_t_t + K * Z_tilde;
     P_t_t = A * P_t_t * A' + CC - K*F*K';
     
-    resStruct.Z_tilde(iObs,:) = Z_tilde;
-    resStruct.a_t_t(iObs,:)   = a_t_t;
-    resStruct.P_t_t(:,:,iObs) = P_t_t;
-    resStruct.Finv(:,:,iObs)  = Finv;
-    resStruct.K(:,:,iObs)     = K;
-    resStruct.U(:,:,iObs)     = U;
+    P_tp1_t = A * P_t_t * A' + CC;
+    
+    resStruct.Z_tilde(iObs,:)   = Z_tilde;
+    resStruct.a_t_t(iObs,:)     = a_t_t;
+    resStruct.P_t_t(:,:,iObs)   = P_t_t;
+    resStruct.P_tp1_t(:,:,iObs) = P_tp1_t;
+    resStruct.Finv(:,:,iObs)    = Finv;
+    resStruct.K(:,:,iObs)       = K;
+    resStruct.U(:,:,iObs)       = U;
     
     negLogLike =  negLogLike + dimObs*log(2*pi)/2 + 0.5* (log(det(F)) + Z_tilde' * Finv * Z_tilde);
     
