@@ -9,13 +9,13 @@ D1 = 1;
 D2 = 0.5;
 
 %% Example 2: Three-dim state, two-dim observations, five-dim disturbances
-A = diag([0.8,0.2,0.1]);
-C = [diag([1, 0.9, 1.4]), zeros(3,2)];
-R = [zeros(2,3), diag([0.8, 1.1])];
-D1 = [1, 0.2, 0.1;...
-    0.7, 0.9, 0.2];
-D2 = [0.5, 0.1, 0.05;...
-    0.9,0.05, 0.2];
+% A = diag([0.8,0.2,0.1]);
+% C = [diag([1, 0.9, 1.4]), zeros(3,2)];
+% R = [zeros(2,3), diag([0.8, 1.1])];
+% D1 = [1, 0.2, 0.1;...
+%     0.7, 0.9, 0.2];
+% D2 = [0.5, 0.1, 0.05;...
+%     0.9,0.05, 0.2];
 
 
 
@@ -43,7 +43,7 @@ end
 %% smooth
 % Original smoother implementation of Nimark (2015)
 smoothState_NimarkOriginal = smooth(A,C,D1,D2,R,Z');
-smoothState_NimarkOriginal = smoothState_NimarkOriginal(:,1:end-1)';
+smoothState_NimarkOriginal = smoothState_NimarkOriginal(:,2:end)';
 
 % filter
 [negLogLike, resStructFilter] = modifiedFilter(Z, D1, D2, A, C, R);
@@ -61,8 +61,16 @@ resStructSmoother3 = modifiedSmoother3(Z, D1, D2, A, ...
     resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.U, resStructFilter.a_t_t, resStructFilter.P_t_t);
 
 %% comparison
-disp('Max abs diff')
+disp('Modified: Smoother 1 (Eq. (4.12)) vs. Smoother 2 (Eq. (4.16))')
+max(max(resStructSmoother1.a_t_T - resStructSmoother2.a_t_T))
+disp('Modified: Smoother 1 (Eq. (4.12)) vs. Smoother 3 (Eq. (4.3))')
+max(max(resStructSmoother1.a_t_T - resStructSmoother3.a_t_T))
 
+disp('Modified: Smoother 1 (Eq. (4.12)) vs. Nimark Smoother (Eq. (3.2))')
+max(max(resStructSmoother1.a_t_T - resStructNimarkSmoother.a_t_T))
+
+disp('Modified: Nimark Original Implementation vs. Nimark Smoother (Eq. (3.2))')
+max(max(smoothState_NimarkOriginal - resStructNimarkSmoother.a_t_T))
 
 
 
@@ -98,7 +106,7 @@ smoothStatesBuildIn = smooth(mdl,Z);
 
 % Original smoother implementation of Nimark (2015)
 smoothStateAugmented_NimarkOriginal = smooth(A_bar, C_bar, D1_bar, D2_bar, R, Z');
-smoothStateAugmented_NimarkOriginal = smoothStateAugmented_NimarkOriginal(:,1:end-1)';
+smoothStateAugmented_NimarkOriginal = smoothStateAugmented_NimarkOriginal(:,2:end)';
 
 % augmented system smoothing with corrected smoothers
 [negLogLike, resStructFilterAugmented] = modifiedFilter(Z, D1_bar, D2_bar, A_bar, C_bar, R);
@@ -116,5 +124,22 @@ resStructSmoother3Augmented = modifiedSmoother3(Z, D1_bar, D2_bar, A_bar, ...
 
 
 
+%% comparison
+disp('Augmented: Smoother 1 (Eq. (4.12)) vs. Smoother 2 (Eq. (4.16))')
+max(max(resStructSmoother1Augmented.a_t_T - resStructSmoother2Augmented.a_t_T))
+disp('Augmented: Smoother 1 (Eq. (4.12)) vs. Smoother 3 (Eq. (4.3))')
+max(max(resStructSmoother1Augmented.a_t_T - resStructSmoother3Augmented.a_t_T))
+
+disp('Augmented: Smoother 1 (Eq. (4.12)) vs. Matlab Build-In Implementation')
+max(max(resStructSmoother1Augmented.a_t_T - smoothStatesBuildIn))
+
+disp('Augmented: Smoother 1 (Eq. (4.12)) vs. Nimark Smoother (Eq. (3.2))')
+max(max(resStructSmoother1Augmented.a_t_T - resStructNimarkSmootherAugmented.a_t_T))
+
+disp('Augmented: Nimark Original Implementation vs. Nimark Smoother (Eq. (3.2))')
+max(max(smoothStateAugmented_NimarkOriginal - resStructNimarkSmootherAugmented.a_t_T))
+
+disp('Augmented: Nimark Original Implementation vs. Matlab Build-In Implementation')
+max(max(smoothStateAugmented_NimarkOriginal - smoothStatesBuildIn))
 
 
