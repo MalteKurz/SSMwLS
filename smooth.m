@@ -49,7 +49,7 @@ Xtilde=A*Xhat(:,1:end);
 Xhat=Xhat(:,1:end);
 
 Xsm=Xhat(:,1:end)*0;
-Xsm(:,T+1)=Xtilde(:,end);
+Xsm(:,T+1)=Xhat(:,end);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %backward recursion
@@ -57,7 +57,7 @@ Xsm(:,T+1)=Xtilde(:,end);
 
 for tt=T:-1:1
     J=PP0(:,:,tt)*A'*inv(PP1(:,:,tt)+eye(dimX)*1e-8);
-    Xsm(:,tt)=Xhat(:,tt+1)+J*(Xsm(:,tt+1)-Xtilde(:,tt+1));
+    Xsm(:,tt)=Xhat(:,tt)+J*(Xsm(:,tt+1)-Xtilde(:,tt+1));
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
