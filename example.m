@@ -1,14 +1,14 @@
-% One dimensional state
 nObs = 1000;
 
+%% Example 1: One dimensional state
 
-A = 0.5;
+A = 0.9;
 C = [1, 0];
 R = [0, 1];
 D1 = 1;
 D2 = 0.5;
 
-% Three-dim state, two-dim observations, five-dim disturbances
+%% Example 2: Three-dim state, two-dim observations, five-dim disturbances
 A = diag([0.8,0.2,0.1]);
 C = [diag([1, 0.9, 1.4]), zeros(3,2)];
 R = [zeros(2,3), diag([0.8, 1.1])];
@@ -19,7 +19,7 @@ D2 = [0.5, 0.1, 0.05;...
 
 
 
-% initialize
+%% initialize
 dimDisturbance = size(R,2);
 dimState       = size(A,1);
 dimObs         = size(D1,1);
@@ -31,7 +31,7 @@ CC = C*C';
 P_0_0 = reshape(inv(eye(dimState*dimState)-kron(A,A))*CC(:),dimState,dimState);
 X(1,:) = mvnrnd(a_0_0, P_0_0);
 
-% simulate
+%% simulate
 u = randn(nObs, dimDisturbance);
 
 for iObs = 1:nObs
@@ -40,13 +40,17 @@ for iObs = 1:nObs
     
 end
 
-
-% smooth Nimark (2015)
-smoothState = smooth(A,C,D1,D2,R,Z');
-smoothState = smoothState(:,2:end)';
+%% smooth
+% Original smoother implementation of Nimark (2015)
+smoothState_NimarkOriginal = smooth(A,C,D1,D2,R,Z');
+smoothState_NimarkOriginal = smoothState_NimarkOriginal(:,1:end-1)';
 
 % filter
 [negLogLike, resStructFilter] = modifiedFilter(Z, D1, D2, A, C, R);
+
+% Implementation of the Nimark (2015) smoother
+resStructNimarkSmoother = nimarkSmoother(D1, D2, A, ...
+    resStructFilter.Finv, resStructFilter.U, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t, resStructFilter.P_tp1_t);
 
 % smooth corrected
 resStructSmoother1 = modifiedSmoother1(Z, D1, D2, A, ...
@@ -56,7 +60,13 @@ resStructSmoother2 = modifiedSmoother2(Z, D1, D2, A, C, R, ...
 resStructSmoother3 = modifiedSmoother3(Z, D1, D2, A, ...
     resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.U, resStructFilter.a_t_t, resStructFilter.P_t_t);
 
-% augmented system and smoothing
+%% comparison
+disp('Max abs diff')
+
+
+
+
+%% augmented system and smoothing
 A_bar = [A zeros(dimState, dimState); eye(dimState), zeros(dimState, dimState)];
 C_bar = [C; zeros(dimState, dimDisturbance)];
 D1_bar = [D1, D2];
@@ -65,35 +75,44 @@ D2_bar = zeros(dimObs, 2*dimState);
 smoothStateAugmented = smooth(A_bar,C_bar,D1_bar,D2_bar,R,Z');
 smoothStateAugmented = smoothStateAugmented(:,:)';
 
+
+% Original smoother implementation of Nimark (2015)
+smoothState = smooth(A_bar, C_bar, D1_bar, D2_bar, R, Z');
+smoothState = smoothState(:,2:end)';
+
 % augmented system with MATLAB build-in
 xx = C(1:dimState, 1:dimState);
 C_tilde = [xx; zeros(dimState, dimState)];
-R_tilde = R(1:dimObs, 1:dimObs);
+R_tilde = R(1:dimObs, dimState+1:dimState+dimObs);
 
 % synchronize the initial conditions
 a_0_0 = zeros(dimState*2, 1);
 CC = C_tilde*C_tilde';
 P_0_0 = reshape(inv(eye(dimState*2*dimState*2)-kron(A_bar,A_bar))*CC(:),dimState*2,dimState*2);
-v = Z(1, :)' - D1_bar * a_0_0;
-F = D1_bar * P_0_0 * D1_bar' + R_tilde * R_tilde';
-Finv = eye(size(F)) / F;
-a_1 = a_0_0 + P_0_0 * D1_bar' * Finv * v;
-P_1_1 = P_0_0 - P_0_0 * D1_bar' * Finv * D1_bar * P_0_0;
+a_1 = a_0_0;
+P_1_1 = A_bar * P_0_0 * A_bar' + CC;
 
-mdl = ssm(A_bar, C_tilde, D1_bar, R_tilde, 'Mean0', a_1, 'Cov0', P_1_1);
+mdl = ssm(A_bar, C_tilde, D1_bar, R_tilde);
 filteredStatesBuildIn = filter(mdl, Z);
 smoothStatesBuildIn = smooth(mdl,Z);
 
+% Original smoother implementation of Nimark (2015)
+smoothStateAugmented_NimarkOriginal = smooth(A_bar, C_bar, D1_bar, D2_bar, R, Z');
+smoothStateAugmented_NimarkOriginal = smoothStateAugmented_NimarkOriginal(:,1:end-1)';
 
 % augmented system smoothing with corrected smoothers
 [negLogLike, resStructFilterAugmented] = modifiedFilter(Z, D1_bar, D2_bar, A_bar, C_bar, R);
 
+% Implementation of the Nimark (2015) smoother
+resStructNimarkSmootherAugmented = nimarkSmoother(D1_bar, D1_bar, A_bar, ...
+    resStructFilterAugmented.Finv, resStructFilterAugmented.U, resStructFilterAugmented.K, resStructFilterAugmented.a_t_t, resStructFilterAugmented.P_t_t, resStructFilterAugmented.P_tp1_t);
+
 resStructSmoother1Augmented = modifiedSmoother1(Z, D1_bar, D2_bar, A_bar, ...
-    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t);
+    resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.K, resStructFilterAugmented.a_t_t, resStructFilterAugmented.P_t_t);
 resStructSmoother2Augmented = modifiedSmoother2(Z, D1_bar, D2_bar, A_bar, C_bar, R, ...
-    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K);
+    resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.K);
 resStructSmoother3Augmented = modifiedSmoother3(Z, D1_bar, D2_bar, A_bar, ...
-    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.U, resStructFilter.a_t_t, resStructFilter.P_t_t);
+    resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.U, resStructFilterAugmented.a_t_t, resStructFilterAugmented.P_t_t);
 
 
 
