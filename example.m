@@ -57,7 +57,7 @@ resStructSmoother2 = modifiedSmoother2(D1, D2, A, C, R, ...
     resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K);
 
 resStructSmoother3 = modifiedSmoother3(D1, D2, A, ...
-    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.U, resStructFilter.a_t_t, resStructFilter.P_t_t);
+    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t);
 
 %% comparison
 disp('Modified: Smoother 1 (Eq. (4.12)) vs. Smoother 2 (Eq. (4.16))')
@@ -106,7 +106,7 @@ resStructSmoother2Augmented = modifiedSmoother2(D1_bar, D2_bar, A_bar, C_bar, R,
     resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.K);
 
 resStructSmoother3Augmented = modifiedSmoother3(D1_bar, D2_bar, A_bar, ...
-    resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.U, resStructFilterAugmented.a_t_t, resStructFilterAugmented.P_t_t);
+    resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.K, resStructFilterAugmented.a_t_t, resStructFilterAugmented.P_t_t);
 
 
 %% comparison
