@@ -1,4 +1,4 @@
-function resStruct = modifiedSmoother1(D1, D2, A, Z_tilde, Finv, K, a_t_t, P_t_t)
+function resStruct = modifiedDeJongKohnAnsleySmoother(D1, D2, A, Z_tilde, Finv, K, a_t_t, P_t_t)
 
 % check and extract dimensions
 [dimObs, dimState, ~] = checkDimsModifiedSSM(D1, D2, A);
@@ -8,6 +8,7 @@ nObs = size(Z_tilde,1);
 
 D_tilde = (D1*A +D2);
 
+% intialize struct for the results
 resStruct = struct();
 resStruct.a_t_T = nan(nObs, dimState);
 resStruct.P_t_T = nan(dimState, dimState, nObs);
