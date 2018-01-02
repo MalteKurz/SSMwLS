@@ -1,7 +1,7 @@
 function [negLogLike, resStruct] = modifiedFilter(Z, D1, D2, A, C, R)
 
 % check and extract dimensions
-[dimObs, dimState, ~] = checkDimsModifiedSSM(D1, D2, A, C, R);
+[dimObs, dimState] = checkDimsModifiedSSM(D1, D2, A, C, R);
 assert(size(Z,2) == dimObs)
 nObs = size(Z,1);
 

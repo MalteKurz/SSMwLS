@@ -1,7 +1,7 @@
 function resStruct = modifiedAndersonMooreSmoother(D1, D2, A, Z_tilde, Finv, K, a_t_t, P_t_t)
 
 % check and extract dimensions
-[dimObs, dimState, ~] = checkDimsModifiedSSM(D1, D2, A);
+[dimObs, dimState] = checkDimsModifiedSSM(D1, D2, A);
 assert(size(Z_tilde,2) == dimObs)
 nObs = size(Z_tilde,1);
 

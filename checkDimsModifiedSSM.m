@@ -7,6 +7,7 @@ assert(size(A,1) == size(A,2))
 % extract dimensions
 [dimObs, dimState] = size(D1);
 
+if exist('C', 'var') && exist('R', 'var')
 if not(isempty(C)) && not(isempty(R))
     % check and extract disturbance dimensions
     dimDisturbance = size(C,2);
@@ -19,6 +20,7 @@ elseif not(isempty(R)) && isempty(C)
     dimDisturbance = size(R,2);
 else
     % nothing to do
+end
 end
 
 end
