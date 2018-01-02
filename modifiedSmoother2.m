@@ -1,14 +1,10 @@
 function resStruct = modifiedSmoother2(Z, D1, D2, A, C, R, Z_tilde, Finv, K)
 
+% check and extract dimensions
+[dimObs, dimState, dimDisturbance] = checkDimsModifiedSSM(D1, D2, A, C, R);
+assert(size(Z_tilde,2) == dimObs)
+nObs = size(Z_tilde,1);
 
-% check dimensions
-assert(isequal(size(D1), size(D2)))
-assert(size(A,1) == size(A,2))
-assert(size(C,2) == size(R,2))
-
-[nObs, dimObs] = size(Z);
-dimState = size(A,1);
-dimDisturbance = size(R,2);
 
 D_tilde = (D1*A +D2);
 D1CR    = (D1 * C + R);

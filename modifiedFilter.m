@@ -1,15 +1,14 @@
 function [negLogLike, resStruct] = modifiedFilter(Z, D1, D2, A, C, R)
 
-% check dimensions
-assert(isequal(size(D1), size(D2)))
-assert(size(A,1) == size(A,2))
-assert(size(C,2) == size(R,2))
+% check and extract dimensions
+[dimObs, dimState, ~] = checkDimsModifiedSSM(D1, D2, A, C, R);
+assert(size(Z,2) == dimObs)
+nObs = size(Z,1);
 
-[nObs, dimObs] = size(Z);
-dimState = size(A,1);
 
 D_tilde = (D1*A +D2);
 
+% intialize struct for the results
 resStruct         = struct();
 resStruct.Z_tilde = nan(nObs, dimObs);
 resStruct.a_t_t   = nan(nObs, dimState);
