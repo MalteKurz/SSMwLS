@@ -50,23 +50,23 @@ resStructNimarkSmoother = nimarkSmoother(D1, D2, A, ...
     resStructFilter.Finv, resStructFilter.U, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t, resStructFilter.P_tp1_t);
 
 % smooth corrected
-resStructSmoother1 = modifiedSmoother1(D1, D2, A, ...
+resStruct_JKA_Smoother = modifiedDeJongKohnAnsleySmoother(D1, D2, A, ...
     resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t);
 
-resStructSmoother2 = modifiedSmoother2(D1, D2, A, C, R, ...
+resStruct_K_Smoother = modifiedKoopmanSmoother(D1, D2, A, C, R, ...
     resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K);
 
-resStructSmoother3 = modifiedSmoother3(D1, D2, A, ...
+resStruct_AM_Smoother = modifiedAndersonMooreSmoother(D1, D2, A, ...
     resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t);
 
 %% comparison
 disp('Modified: Smoother 1 (Eq. (4.12)) vs. Smoother 2 (Eq. (4.16))')
-max(max(resStructSmoother1.a_t_T - resStructSmoother2.a_t_T))
+max(max(resStruct_JKA_Smoother.a_t_T - resStruct_K_Smoother.a_t_T))
 disp('Modified: Smoother 1 (Eq. (4.12)) vs. Smoother 3 (Eq. (4.3))')
-max(max(resStructSmoother1.a_t_T - resStructSmoother3.a_t_T))
+max(max(resStruct_JKA_Smoother.a_t_T - resStruct_AM_Smoother.a_t_T))
 
 disp('Modified: Smoother 1 (Eq. (4.12)) vs. Nimark Smoother (Eq. (3.2))')
-max(max(resStructSmoother1.a_t_T - resStructNimarkSmoother.a_t_T))
+max(max(resStruct_JKA_Smoother.a_t_T - resStructNimarkSmoother.a_t_T))
 
 
 
@@ -99,26 +99,26 @@ smoothStatesBuildIn = smooth(mdl,Z);
 resStructNimarkSmootherAugmented = nimarkSmoother(D1_bar, D1_bar, A_bar, ...
     resStructFilterAugmented.Finv, resStructFilterAugmented.U, resStructFilterAugmented.K, resStructFilterAugmented.a_t_t, resStructFilterAugmented.P_t_t, resStructFilterAugmented.P_tp1_t);
 
-resStructSmoother1Augmented = modifiedSmoother1(D1_bar, D2_bar, A_bar, ...
+resStruct_JKA_SmootherAugmented = modifiedDeJongKohnAnsleySmoother(D1_bar, D2_bar, A_bar, ...
     resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.K, resStructFilterAugmented.a_t_t, resStructFilterAugmented.P_t_t);
 
-resStructSmoother2Augmented = modifiedSmoother2(D1_bar, D2_bar, A_bar, C_bar, R, ...
+resStruct_K_SmootherAugmented = modifiedKoopmanSmoother(D1_bar, D2_bar, A_bar, C_bar, R, ...
     resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.K);
 
-resStructSmoother3Augmented = modifiedSmoother3(D1_bar, D2_bar, A_bar, ...
+resStruct_AM_SmootherAugmented = modifiedAndersonMooreSmoother(D1_bar, D2_bar, A_bar, ...
     resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.K, resStructFilterAugmented.a_t_t, resStructFilterAugmented.P_t_t);
 
 
 %% comparison
 disp('Augmented: Smoother 1 (Eq. (4.12)) vs. Smoother 2 (Eq. (4.16))')
-max(max(resStructSmoother1Augmented.a_t_T - resStructSmoother2Augmented.a_t_T))
+max(max(resStruct_JKA_SmootherAugmented.a_t_T - resStruct_K_SmootherAugmented.a_t_T))
 disp('Augmented: Smoother 1 (Eq. (4.12)) vs. Smoother 3 (Eq. (4.3))')
-max(max(resStructSmoother1Augmented.a_t_T - resStructSmoother3Augmented.a_t_T))
+max(max(resStruct_JKA_SmootherAugmented.a_t_T - resStruct_AM_SmootherAugmented.a_t_T))
 
 disp('Augmented: Smoother 1 (Eq. (4.12)) vs. Matlab Build-In Implementation')
-max(max(resStructSmoother1Augmented.a_t_T - smoothStatesBuildIn))
+max(max(resStruct_JKA_SmootherAugmented.a_t_T - smoothStatesBuildIn))
 
 disp('Augmented: Smoother 1 (Eq. (4.12)) vs. Nimark Smoother (Eq. (3.2))')
-max(max(resStructSmoother1Augmented.a_t_T - resStructNimarkSmootherAugmented.a_t_T))
+max(max(resStruct_JKA_SmootherAugmented.a_t_T - resStructNimarkSmootherAugmented.a_t_T))
 
 
