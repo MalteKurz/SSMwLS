@@ -1,4 +1,4 @@
-function resStruct = modifiedSmoother3(Z, D1, D2, A, Z_tilde, Finv, U, a_t_t, P_t_t)
+function resStruct = modifiedSmoother3(D1, D2, A, Z_tilde, Finv, U, a_t_t, P_t_t)
 
 % check and extract dimensions
 [dimObs, dimState, ~] = checkDimsModifiedSSM(D1, D2, A);
