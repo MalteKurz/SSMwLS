@@ -87,6 +87,51 @@ classdef UnitTestsSSMwLS < matlab.unittest.TestCase
             
         end
         
+        function testAllModifiedSmoother_vs_AugmentedFilter(testCase)
+            resStruct_AM_Smoother = modifiedAndersonMooreSmoother(testCase.parameters.D1, testCase.parameters.D2, testCase.parameters.A, ...
+                testCase.resStructFilter.Z_tilde, testCase.resStructFilter.Finv, testCase.resStructFilter.K, testCase.resStructFilter.a_t_t, testCase.resStructFilter.P_t_t);
+
+            resStruct_JKA_Smoother = modifiedDeJongKohnAnsleySmoother(testCase.parameters.D1, testCase.parameters.D2, testCase.parameters.A, ...
+                testCase.resStructFilter.Z_tilde, testCase.resStructFilter.Finv, testCase.resStructFilter.K, testCase.resStructFilter.a_t_t, testCase.resStructFilter.P_t_t);
+            
+            resStruct_K_Smoother = modifiedKoopmanSmoother(testCase.parameters.D1, testCase.parameters.D2, testCase.parameters.A, testCase.parameters.C, testCase.parameters.R, ...
+                testCase.resStructFilter.Z_tilde, testCase.resStructFilter.Finv, testCase.resStructFilter.K);
+            
+            % get matrices of the augmented system
+            augmentedSSM = getAugmentedSystem(testCase.parameters.D1, testCase.parameters.D2, testCase.parameters.A, testCase.parameters.C, testCase.parameters.R);
+            
+            % filter with augmented system
+            [~, resStructFilterAugmented] = modifiedFilter(testCase.Z, augmentedSSM.D1, augmentedSSM.D2, augmentedSSM.A, augmentedSSM.C, augmentedSSM.R);
+            
+            dimState= size(testCase.parameters.D1,2);
+            
+            % apply modified smmother to augmented systems
+            resStruct_AM_SmootherAugmented = modifiedAndersonMooreSmoother(augmentedSSM.D1, augmentedSSM.D2, augmentedSSM.A, ...
+                resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.K, resStructFilterAugmented.a_t_t, resStructFilterAugmented.P_t_t);
+
+            resStruct_JKA_SmootherAugmented = modifiedDeJongKohnAnsleySmoother(augmentedSSM.D1, augmentedSSM.D2, augmentedSSM.A, ...
+                resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.K, resStructFilterAugmented.a_t_t, resStructFilterAugmented.P_t_t);
+            
+            resStruct_K_SmootherAugmented = modifiedKoopmanSmoother(augmentedSSM.D1, augmentedSSM.D2, augmentedSSM.A, augmentedSSM.C, augmentedSSM.R, ...
+                resStructFilterAugmented.Z_tilde, resStructFilterAugmented.Finv, resStructFilterAugmented.K);
+            
+            
+            
+            testCase.verifyEqual(resStruct_AM_SmootherAugmented.a_t_T, resStruct_JKA_SmootherAugmented.a_t_T,...
+                'AbsTol', 10^-8, 'RelTol', 10^-8);
+            testCase.verifyEqual(resStruct_AM_SmootherAugmented.a_t_T, resStruct_K_SmootherAugmented.a_t_T,...
+                'AbsTol', 10^-8, 'RelTol', 10^-8);
+            
+            testCase.verifyEqual(resStruct_AM_Smoother.a_t_T, resStruct_AM_SmootherAugmented.a_t_T(:,1:dimState),...
+                'AbsTol', 10^-8, 'RelTol', 10^-8);
+            testCase.verifyEqual(resStruct_JKA_Smoother.a_t_T, resStruct_JKA_SmootherAugmented.a_t_T(:,1:dimState),...
+                'AbsTol', 10^-8, 'RelTol', 10^-8);
+            testCase.verifyEqual(resStruct_K_Smoother.a_t_T, resStruct_K_SmootherAugmented.a_t_T(:,1:dimState),...
+                'AbsTol', 10^-8, 'RelTol', 10^-8);
+            
+            
+        end
+        
     end
     
 end
