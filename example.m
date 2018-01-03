@@ -1,11 +1,11 @@
-%% Example: ARMA(1,1) with measurement error as State Space Models with Lagged State (SSMwLS) in the measurement equation
+%% Example: ARMA(1,1)-process with measurement error as State Space Model with Lagged State (SSMwLS) in the measurement equation
 %
 % Author: Malte S. Kurz
 %
 %% Note
 %
-%      Example taken from Kurz (2018): Section 5 Application: ARMA dynamics
-%      with measurement error
+%      Example taken from Section 5 of Kurz (2018): "Application: ARMA
+%      dynamics with measurement error"
 %
 %% References
 %
