@@ -13,10 +13,6 @@ classdef UnitTestsSSMwLS < matlab.unittest.TestCase
             0.5};
     end
     
-    %properties (TestParameter)
-    %    smoother = {'modifiedAndersonMooreSmoother', 'modifiedDeJongKohnAnsleySmoother', 'modifiedKoopmanSmoother'}
-    %end
-    
     properties
         nObs = 2000;
         resStruct % resStruct from the modified filter
