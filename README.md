@@ -20,7 +20,7 @@ State Equation
 ### References
 Kurz, M. S. 2018. "A note on low-dimensional Kalman smoother for systems with lagged states in the measurement equation"
 
-Nimark, K. P. 2015. "A low dimensional Kalman filter for systems with lagged states in the measurement equation". Economics Letters 127: 10-13.
+[Nimark, K. P. 2015. "A low dimensional Kalman filter for systems with lagged states in the measurement equation". Economics Letters 127: 10-13.](https://doi.org/10.1016/j.econlet.2014.12.016)
 
 ### Author
 Malte S. Kurz
