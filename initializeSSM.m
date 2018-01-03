@@ -1,4 +1,5 @@
 function [a_0_0, P_0_0] = initializeSSM(A, C, dimState)
+%INITIALIZESSM Initialize SSM
 
 a_0_0 = zeros(dimState, 1);
 

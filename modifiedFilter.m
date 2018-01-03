@@ -47,7 +47,7 @@ function [negLogLike, resStruct] = modifiedFilter(Z, D1, D2, A, C, R)
 %
 %
 %
-% Author: Malte Kurz
+% Author: Malte S. Kurz
 
 
 % check and extract dimensions

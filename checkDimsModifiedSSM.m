@@ -1,4 +1,5 @@
 function [dimObs, dimState, dimDisturbance] = checkDimsModifiedSSM(D1, D2, A, C, R)
+%CHECKDIMSSSMwLS Check and extract dimensions of SSMwLS
 
 % check dimensions of observables and states
 assert(isequal(size(D1), size(D2)))
