@@ -2,6 +2,8 @@
 ---
 State Space Model with Lagged State (SSMwLS) in the measurement equation
 
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/MalteKurz/SSMwLS/blob/master/LICENCE.txt)
+
 ### Motivation
 This repo contains accompanying code to the paper "A note on low-dimensional Kalman smoother for systems with lagged states in the measurement equation" (Kurz, 2018).
 
@@ -22,8 +24,6 @@ Nimark, K. P. 2015. "A low dimensional Kalman filter for systems with lagged sta
 
 ### Author
 Malte S. Kurz
-
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/MalteKurz/SSMwLS/blob/master/LICENCE.txt)
 
 
 ---
