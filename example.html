@@ -1,0 +1,218 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Example: ARMA(1,1) with measurement error as State Space Models with Lagged State (SSMwLS) in the measurement equation</title><meta name="generator" content="MATLAB 9.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-03"><meta name="DC.source" content="example.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Example: ARMA(1,1) with measurement error as State Space Models with Lagged State (SSMwLS) in the measurement equation</h1><!--introduction--><p>Author: Malte S. Kurz</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Note</a></li><li><a href="#2">References</a></li><li><a href="#3">Parametrization</a></li><li><a href="#4">Matrices for the SSMwLS</a></li><li><a href="#5">Initialize</a></li><li><a href="#6">Simulate</a></li><li><a href="#7">Filter</a></li><li><a href="#8">Smoother</a></li><li><a href="#9">Comparison</a></li></ul></div><h2 id="1">Note</h2><pre>    Example taken from Kurz (2018): Section 5 Application: ARMA dynamics
+    with measurement error</pre><h2 id="2">References</h2><pre>    Kurz, M. S. 2018. "A note on low-dimensional Kalman smoother for
+       systems with lagged states in the measurement equation"</pre><pre>    Nimark, K. P. 2015. "A low dimensional Kalman filter for systems
+       with lagged states in the measurement equation". Economics
+       Letters 127: 10-13.</pre><h2 id="3">Parametrization</h2><pre class="codeinput">nObs = 5000;                       <span class="comment">% number of observations</span>
+phi = 0.9;                         <span class="comment">% AR(1)-parameter</span>
+theta = 0.5;                       <span class="comment">% MA(1)-parameter</span>
+sigma_eps = 1;                     <span class="comment">% standard-deviation of the signal-disturbance</span>
+q = 1.5;                           <span class="comment">% signal-to-noise ratio</span>
+sigma_delta = sigma_eps / sqrt(q); <span class="comment">% standard-deviation of the measurement error</span>
+</pre><h2 id="4">Matrices for the SSMwLS</h2><pre class="codeinput">A = phi;
+C = [sigma_eps, 0];
+R = [0, sigma_delta];
+D1 = 1;
+D2 = theta;
+</pre><h2 id="5">Initialize</h2><pre class="codeinput">[dimObs, dimState, dimDisturbance] = checkDimsModifiedSSM(D1, D2, A, C, R);
+Z              = nan(nObs, dimObs);
+X              = nan(nObs, dimState);
+
+[a_0_0, P_0_0] = initializeSSM(A, C, dimState);
+X(1,:)         = mvnrnd(a_0_0, P_0_0);
+</pre><h2 id="6">Simulate</h2><pre class="codeinput">u = randn(nObs, dimDisturbance);
+
+<span class="keyword">for</span> iObs = 1:nObs
+    X(iObs+1, :) = A * X(iObs,:)' + C * u(iObs,:)';
+    Z(iObs, :)   = D1 * X(iObs+1,:)' + D2 * X(iObs,:)' + R * u(iObs,:)';
+
+<span class="keyword">end</span>
+</pre><h2 id="7">Filter</h2><pre class="codeinput">[~, resStructFilter] = modifiedFilter(Z, D1, D2, A, C, R);
+</pre><h2 id="8">Smoother</h2><pre class="codeinput"><span class="comment">% Modified Anderson and Moore (1979) smoother (Eq. (4.3) in Kurz (2018))</span>
+resStruct_AM_Smoother = modifiedAndersonMooreSmoother(D1, D2, A, <span class="keyword">...</span>
+    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t);
+
+<span class="comment">% Modified de Jong (1988, 1989) and Kohn and Ansley (1989) smoother (Eq. (4.11) in Kurz (2018))</span>
+resStruct_JKA_Smoother = modifiedDeJongKohnAnsleySmoother(D1, D2, A, <span class="keyword">...</span>
+    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t);
+
+<span class="comment">% Modified Koopman (1993) smoother (Eq. (4.14)-(4.15) in Kurz (2018))</span>
+resStruct_K_Smoother = modifiedKoopmanSmoother(D1, D2, A, C, R, <span class="keyword">...</span>
+    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K);
+
+<span class="comment">% Nimark's (2015) smoother</span>
+resStructNimarkSmoother = nimarkSmoother(D1, D2, A, <span class="keyword">...</span>
+    resStructFilter.Finv, resStructFilter.U, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t, resStructFilter.P_tp1_t);
+</pre><h2 id="9">Comparison</h2><pre class="codeinput">fprintf([<span class="string">'Modified Anderson and Moore (1979) smoother vs. Modified de Jong (1988, 1989) and Kohn and Ansley (1989) smoother:\n'</span>,<span class="keyword">...</span>
+<span class="string">'Max norm of difference: '</span>, num2str(max(max(resStruct_AM_Smoother.a_t_T - resStruct_JKA_Smoother.a_t_T))), <span class="string">'\n\n'</span>]);
+
+fprintf([<span class="string">'Modified Anderson and Moore (1979) smoother vs. Modified Koopman (1993) smoother:\n'</span>,<span class="keyword">...</span>
+<span class="string">'Max norm of difference: '</span>, num2str(max(max(resStruct_AM_Smoother.a_t_T - resStruct_K_Smoother.a_t_T))), <span class="string">'\n\n'</span>]);
+
+fprintf([<span class="string">'Modified de Jong (1988, 1989) and Kohn and Ansley (1989) smoother vs. Nimark''s (2015) smoother:\n'</span>,<span class="keyword">...</span>
+<span class="string">'Max norm of difference: '</span>, num2str(max(max(resStruct_JKA_Smoother.a_t_T - resStructNimarkSmoother.a_t_T))), <span class="string">'\n\n'</span>]);
+</pre><pre class="codeoutput">Modified Anderson and Moore (1979) smoother vs. Modified de Jong (1988, 1989) and Kohn and Ansley (1989) smoother:
+Max norm of difference: 8.8818e-16
+
+Modified Anderson and Moore (1979) smoother vs. Modified Koopman (1993) smoother:
+Max norm of difference: 1.7764e-15
+
+Modified de Jong (1988, 1989) and Kohn and Ansley (1989) smoother vs. Nimark's (2015) smoother:
+Max norm of difference: 0.47095
+
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Example: ARMA(1,1) with measurement error as State Space Models with Lagged State (SSMwLS) in the measurement equation
+%
+% Author: Malte S. Kurz
+%
+%% Note
+%
+%      Example taken from Kurz (2018): Section 5 Application: ARMA dynamics
+%      with measurement error
+%
+%% References
+%
+%      Kurz, M. S. 2018. "A note on low-dimensional Kalman smoother for
+%         systems with lagged states in the measurement equation"
+%
+%      Nimark, K. P. 2015. "A low dimensional Kalman filter for systems
+%         with lagged states in the measurement equation". Economics
+%         Letters 127: 10-13.
+%
+%
+
+%% Parametrization
+nObs = 5000;                       % number of observations
+phi = 0.9;                         % AR(1)-parameter
+theta = 0.5;                       % MA(1)-parameter
+sigma_eps = 1;                     % standard-deviation of the signal-disturbance
+q = 1.5;                           % signal-to-noise ratio 
+sigma_delta = sigma_eps / sqrt(q); % standard-deviation of the measurement error
+
+%% Matrices for the SSMwLS
+A = phi;
+C = [sigma_eps, 0];
+R = [0, sigma_delta];
+D1 = 1;
+D2 = theta;
+
+%% Initialize
+[dimObs, dimState, dimDisturbance] = checkDimsModifiedSSM(D1, D2, A, C, R);
+Z              = nan(nObs, dimObs);
+X              = nan(nObs, dimState);
+
+[a_0_0, P_0_0] = initializeSSM(A, C, dimState);
+X(1,:)         = mvnrnd(a_0_0, P_0_0);
+
+%% Simulate
+u = randn(nObs, dimDisturbance);
+
+for iObs = 1:nObs
+    X(iObs+1, :) = A * X(iObs,:)' + C * u(iObs,:)';
+    Z(iObs, :)   = D1 * X(iObs+1,:)' + D2 * X(iObs,:)' + R * u(iObs,:)';
+    
+end
+
+%% Filter
+[~, resStructFilter] = modifiedFilter(Z, D1, D2, A, C, R);
+
+%% Smoother
+
+% Modified Anderson and Moore (1979) smoother (Eq. (4.3) in Kurz (2018))
+resStruct_AM_Smoother = modifiedAndersonMooreSmoother(D1, D2, A, ...
+    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t);
+
+% Modified de Jong (1988, 1989) and Kohn and Ansley (1989) smoother (Eq. (4.11) in Kurz (2018))
+resStruct_JKA_Smoother = modifiedDeJongKohnAnsleySmoother(D1, D2, A, ...
+    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t);
+
+% Modified Koopman (1993) smoother (Eq. (4.14)-(4.15) in Kurz (2018))
+resStruct_K_Smoother = modifiedKoopmanSmoother(D1, D2, A, C, R, ...
+    resStructFilter.Z_tilde, resStructFilter.Finv, resStructFilter.K);
+
+% Nimark's (2015) smoother
+resStructNimarkSmoother = nimarkSmoother(D1, D2, A, ...
+    resStructFilter.Finv, resStructFilter.U, resStructFilter.K, resStructFilter.a_t_t, resStructFilter.P_t_t, resStructFilter.P_tp1_t);
+
+
+%% Comparison
+fprintf(['Modified Anderson and Moore (1979) smoother vs. Modified de Jong (1988, 1989) and Kohn and Ansley (1989) smoother:\n',...
+'Max norm of difference: ', num2str(max(max(resStruct_AM_Smoother.a_t_T - resStruct_JKA_Smoother.a_t_T))), '\n\n']);
+
+fprintf(['Modified Anderson and Moore (1979) smoother vs. Modified Koopman (1993) smoother:\n',...
+'Max norm of difference: ', num2str(max(max(resStruct_AM_Smoother.a_t_T - resStruct_K_Smoother.a_t_T))), '\n\n']);
+
+fprintf(['Modified de Jong (1988, 1989) and Kohn and Ansley (1989) smoother vs. Nimark''s (2015) smoother:\n',...
+'Max norm of difference: ', num2str(max(max(resStruct_JKA_Smoother.a_t_T - resStructNimarkSmoother.a_t_T))), '\n\n']);
+
+
+##### SOURCE END #####
+--></body></html>
