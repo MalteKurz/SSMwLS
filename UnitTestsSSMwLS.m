@@ -27,6 +27,7 @@ classdef UnitTestsSSMwLS < matlab.unittest.TestCase
     
     methods(TestMethodSetup, ParameterCombination='sequential')
         function MethodSetup(testCase, A, C, R, D1, D2)
+            
             %% initialize
             [dimObs, testCase.dimState, dimDisturbance] = checkDimsModifiedSSM(D1, D2, A, C, R);
             testCase.Z     = nan(testCase.nObs, dimObs);
@@ -65,7 +66,7 @@ classdef UnitTestsSSMwLS < matlab.unittest.TestCase
             [~, testCase.resStruct.augmentedFilter] = modifiedFilter(testCase.Z, augmentedSSM.D1, augmentedSSM.D2, augmentedSSM.A, augmentedSSM.C, augmentedSSM.R);
             
             
-            %% apply modified smmother to augmented systems
+            %% apply modified smmother to augmented system
             testCase.resStruct.AM_SmootherAugmented = modifiedAndersonMooreSmoother(augmentedSSM.D1, augmentedSSM.D2, augmentedSSM.A, ...
                 testCase.resStruct.augmentedFilter.Z_tilde, testCase.resStruct.augmentedFilter.Finv, testCase.resStruct.augmentedFilter.K, testCase.resStruct.augmentedFilter.a_t_t, testCase.resStruct.augmentedFilter.P_t_t);
 
@@ -74,6 +75,16 @@ classdef UnitTestsSSMwLS < matlab.unittest.TestCase
             
             testCase.resStruct.K_SmootherAugmented = modifiedKoopmanSmoother(augmentedSSM.D1, augmentedSSM.D2, augmentedSSM.A, augmentedSSM.C, augmentedSSM.R, ...
                 testCase.resStruct.augmentedFilter.Z_tilde, testCase.resStruct.augmentedFilter.Finv, testCase.resStruct.augmentedFilter.K);
+            
+            %% apply Matlab's build-in function to augmented system
+            xx = C(1:testCase.dimState, 1:testCase.dimState);
+            C_tilde = [xx; zeros(testCase.dimState, testCase.dimState)];
+            R_tilde = R(1:dimObs, testCase.dimState+1 : testCase.dimState+dimObs);
+            
+            mdl = ssm(augmentedSSM.A, C_tilde, augmentedSSM.D1, R_tilde);
+            testCase.resStruct.filteredStatesBuildIn = filter(mdl, testCase.Z);
+            testCase.resStruct.smoothStatesBuildIn = smooth(mdl, testCase.Z);
+            
             
         end
     end
@@ -145,6 +156,34 @@ classdef UnitTestsSSMwLS < matlab.unittest.TestCase
         function augmented__JKA_vs_K(testCase)
             
             testCase.verifyEqual(testCase.resStruct.JKA_SmootherAugmented.a_t_T, testCase.resStruct.K_SmootherAugmented.a_t_T,...
+                'AbsTol', 10^-12, 'RelTol', 10^-12);
+            
+        end
+        
+        function augmentedFilter_vs_MatlabBuildIn(testCase)
+            
+            testCase.verifyEqual(testCase.resStruct.augmentedFilter.a_t_t, testCase.resStruct.filteredStatesBuildIn,...
+                'AbsTol', 10^-12, 'RelTol', 10^-12);
+            
+        end
+        
+        function augmented__AM_vs_MatlabBuildIn(testCase)
+            
+            testCase.verifyEqual(testCase.resStruct.smoothStatesBuildIn, testCase.resStruct.AM_SmootherAugmented.a_t_T,...
+                'AbsTol', 10^-12, 'RelTol', 10^-12);
+            
+        end
+        
+        function augmented__JKA_vs_MatlabBuildIn(testCase)
+            
+            testCase.verifyEqual(testCase.resStruct.smoothStatesBuildIn, testCase.resStruct.JKA_SmootherAugmented.a_t_T,...
+                'AbsTol', 10^-12, 'RelTol', 10^-12);
+            
+        end
+        
+        function augmented__K_vs_MatlabBuildIn(testCase)
+            
+            testCase.verifyEqual(testCase.resStruct.smoothStatesBuildIn, testCase.resStruct.K_SmootherAugmented.a_t_T,...
                 'AbsTol', 10^-12, 'RelTol', 10^-12);
             
         end
