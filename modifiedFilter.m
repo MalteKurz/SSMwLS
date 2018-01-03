@@ -1,4 +1,54 @@
 function [negLogLike, resStruct] = modifiedFilter(Z, D1, D2, A, C, R)
+%MODIFIEDFILTER Nimark's (2015) modified Kalman filter for SSMwLS
+% Purpose
+%        The function computes Nimark's (2015) modified Kalman filter for
+%        State Space Models with Lagged State (SSMwLS) in the measurement
+%        equation.
+%
+%
+% Usage
+%        For SSMwLS
+%           [negLogLike, resStruct] = modifiedFilter(Z, D1, D2, A, C, R)
+%        For a classical SSM, i.e., without lagged state
+%           [negLogLike, resStruct] = modifiedFilter(Z, D1, zeros(size(D1)), A, C, R)
+%
+%
+% Model Equation
+%       Measurement Equation
+%           Z_t = D_1 X_t + D_2 X_t-1 + R u_t
+%       State Equation
+%           X_t = A X_t-1 + C u_t
+%
+% Inputs
+%       Z  = (nObs x dimObs) vector of observables
+%       D1 = (dimObs x dimState) matrix from the measurement equation
+%       D2 = (dimObs x dimState) matrix from the measurement equation
+%       A  = (dimState x dimState) matrix from the state equation
+%       C  = (dimState x dimDisturbance) matrix from the state equation
+%       R  = (dimObs x dimDisturbance) matrix from the measurement equation 
+%
+%
+% Outputs
+%      negLogLike = The negative log-likelihood
+%      resStruct  = A structure containing
+%                       Z_tilde Errors
+%                       a_t_t   Filtered states
+%                       P_t_t   Filtered variances
+%                       P_t_tp1 One-step ahead predictors of the variances
+%                       Finv    Second term of the Kalman gain
+%                       K       Kalman gain
+%                       U       First term of the Kalman gain
+%
+%
+% References
+%      Nimark, K. P. 2015. "A low dimensional Kalman filter for systems
+%         with lagged states in the measurement equation". Economics
+%         Letters 127: 10-13.
+%
+%
+%
+% Author: Malte Kurz
+
 
 % check and extract dimensions
 [dimObs, dimState] = checkDimsModifiedSSM(D1, D2, A, C, R);
