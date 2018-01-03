@@ -1,5 +1,33 @@
 function resStruct = nimarkSmoother(D1, D2, A, Finv, U, K, a_t_t, P_t_t, P_tp1_t)
+%NIMARKSMOOTHER Nimark's (2015) Kalman smoother for SSMwLS
+% Purpose
+%        The function computes Nimark's (2015) Kalman smoother for State
+%        Space Models with Lagged State (SSMwLS) in the measurement
+%        equation. The variance of the smooth states is also computed (Eq. 
+%        (4.16) in Kurz (2018)).
+%
+% Note
+%       This smoother is in general not returning MSE-minimizing smooth
+%       state estimates (see Kurz (2018)). Therefore, it is not recommended
+%       for usage but only made available to allow replicating the results
+%       in Kurz (2018).
+%
+%
+% References
+%      Kurz, M. S. 2018. "A note on low-dimensional Kalman smoother for
+%         systems with lagged states in the measurement equation".
+%      Nimark, K. P. 2015. "A low dimensional Kalman filter for systems
+%         with lagged states in the measurement equation". Economics
+%         Letters 127: 10-13.
+%
+%
+% Author: Malte S. Kurz
 
+
+ warning('SSMwLS:nimarkSmoother', ['[SSMwLS:nimarkSmoother]  This smoother ',...
+     'is in general not returning MSE-minimizing smooth state estimates ',...
+     '(see Kurz (2018)). Therefore, it is not recommended for usage but ',...
+     'only made available to allow replicating the results in Kurz (2018).']);
 
 % check dimensions
 assert(isequal(size(D1), size(D2)))
