@@ -26,9 +26,7 @@ dimObs         = size(D1,1);
 Z              = nan(nObs, dimObs);
 X              = nan(nObs, dimState);
 
-a_0_0 = zeros(dimState, 1);
-CC = C*C';
-P_0_0 = reshape(inv(eye(dimState*dimState)-kron(A,A))*CC(:),dimState,dimState);
+[a_0_0, P_0_0] = initializeSSM(A, C, dimState);
 X(1,:) = mvnrnd(a_0_0, P_0_0);
 
 %% simulate
@@ -80,13 +78,6 @@ D2_bar = zeros(dimObs, 2*dimState);
 xx = C(1:dimState, 1:dimState);
 C_tilde = [xx; zeros(dimState, dimState)];
 R_tilde = R(1:dimObs, dimState+1:dimState+dimObs);
-
-% synchronize the initial conditions
-a_0_0 = zeros(dimState*2, 1);
-CC = C_tilde*C_tilde';
-P_0_0 = reshape(inv(eye(dimState*2*dimState*2)-kron(A_bar,A_bar))*CC(:),dimState*2,dimState*2);
-a_1 = a_0_0;
-P_1_1 = A_bar * P_0_0 * A_bar' + CC;
 
 mdl = ssm(A_bar, C_tilde, D1_bar, R_tilde);
 filteredStatesBuildIn = filter(mdl, Z);

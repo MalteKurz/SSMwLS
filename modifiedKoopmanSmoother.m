@@ -38,9 +38,7 @@ for iObs = nObs:-1:1
 end
 
 % initialization
-a_0_0 = zeros(dimState, 1);
-CC=C*C';
-P_0_0=reshape(inv(eye(dimState*dimState)-kron(A,A))*CC(:),dimState,dimState);
+[a_0_0, P_0_0] = initializeSSM(A, C, dimState);
 a_t_T = a_0_0 + P_0_0 * r;
 
 % state smoother (forward recursion)

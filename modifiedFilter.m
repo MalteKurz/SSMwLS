@@ -7,6 +7,7 @@ nObs = size(Z,1);
 
 
 D_tilde = (D1*A +D2);
+CC = C * C';
 
 % intialize struct for the results
 resStruct         = struct();
@@ -19,9 +20,8 @@ resStruct.K       = nan(dimState, dimObs, nObs);
 resStruct.U       = nan(dimState, dimObs, nObs);
 
 % initialize filter
-a_t_t = zeros(dimState, 1);
-CC=C*C';
-P_t_t=reshape(inv(eye(dimState*dimState)-kron(A,A))*CC(:), dimState, dimState);
+[a_t_t, P_t_t] = initializeSSM(A, C, dimState);
+
 
 negLogLike = 0;
 
