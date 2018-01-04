@@ -107,6 +107,13 @@ classdef UnitTestsSSMwLS < matlab.unittest.TestCase
             
         end
         
+        function smoothVariances__AM_vs_JKA(testCase)
+            
+            testCase.verifyEqual(testCase.resStruct.AM_Smoother.P_t_T, testCase.resStruct.JKA_Smoother.P_t_T,...
+                'AbsTol', 10^-12, 'RelTol', 10^-12);
+            
+        end
+        
         function modifiedFilter_vs_augmentedFilter(testCase)
             
             testCase.verifyEqual(testCase.resStruct.modifiedFilter.a_t_t, testCase.resStruct.augmentedFilter.a_t_t(:,1:testCase.dimState),...
@@ -138,6 +145,13 @@ classdef UnitTestsSSMwLS < matlab.unittest.TestCase
         function augmented__AM_vs_JKA(testCase)
             
             testCase.verifyEqual(testCase.resStruct.AM_SmootherAugmented.a_t_T, testCase.resStruct.JKA_SmootherAugmented.a_t_T,...
+                'AbsTol', 10^-12, 'RelTol', 10^-12);
+            
+        end
+        
+        function augmented__smoothVariances__AM_vs_JKA(testCase)
+            
+            testCase.verifyEqual(testCase.resStruct.AM_SmootherAugmented.P_t_T, testCase.resStruct.JKA_SmootherAugmented.P_t_T,...
                 'AbsTol', 10^-12, 'RelTol', 10^-12);
             
         end
